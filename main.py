@@ -1,4 +1,6 @@
-from flask import Flask, url_for, request
+import os
+
+from flask import Flask, url_for, request, redirect
 
 app = Flask(__name__)
 
@@ -13,10 +15,14 @@ def mission():
     return "<strong>И на Марсе будут яблони цвести!</strong>"
 
 
-@app.route('/form_sample', methods=['POST', 'GET'])
+@app.route('/carousel')
 def form_sample():
-    if request.method == 'GET':
-        return f'''<!doctype html>
+    script = """var myCarousel = document.querySelector('#myCarousel')
+var carousel = new bootstrap.Carousel(myCarousel, {
+  interval: 2000,
+  wrap: true
+})"""
+    return f"""<!doctype html>
                         <html lang="en">
                           <head>
                             <meta charset="utf-8">
@@ -25,70 +31,30 @@ def form_sample():
                             href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
                             integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
                             crossorigin="anonymous">
-                            <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}" />
-                            <title>Пример формы</title>
+                            <title>Пейзажи</title>
                           </head>
                           <body>
-                            <h1>Форма для регистрации в суперсекретной системе</h1>
-                            <div>
-                                <form class="login_form" method="post">
-                                    <input class="form-control" placeholder="Введите фамилию">
-                                    <input class="form-control" placeholder="Введите имя">
-                                    <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Введите адрес почты" name="email">
-                                    <label for="classSelect">Ваше образование</label>
-                                    <select class="form-select">
-                         
-                                      <option>Начальное</option>
-                                      <option>Среднее</option>
-                                        <option>Высшее</option>
-                                    </select>
-                                    <label for="check">Ваша проффесия</label>
-                                    <div id="check">
-                                    {"<br/>".join([f'<input type="checkbox" id="{el}"/> <label class="form-check-label" for="{el}">{el}</label>' for el in data])}
-                                    </div>
-                    
-                                    <div class="form-group">
-                                        <label for="about">почему вы хотите принять участие в миссии?</label>
-                                        <textarea class="form-control" id="about" rows="3" name="about"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="photo">Приложите фотографию</label>
-                                        <input type="file" class="form-control-file" id="photo" name="file">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="form-check">Укажите пол</label>
-                                        <div class="form-check">
-                                          <input class="form-check-input" type="radio" name="sex" id="male" value="male" checked>
-                                          <label class="form-check-label" for="male">
-                                            Мужской
-                                          </label>
-                                        </div>
-                                        <div class="form-check">
-                                          <input class="form-check-input" type="radio" name="sex" id="female" value="female">
-                                          <label class="form-check-label" for="female">
-                                            Женский
-                                          </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group form-check">
-                                        <input type="checkbox" class="form-check-input" id="acceptRules" name="accept">
-                                        <label class="form-check-label" for="acceptRules">Готовы ли вы остаться на Марсе?</label>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Записаться</button>
-                                </form>
+                          <h1>Пейзажи</h1>
+                          <div class="content">
+                          <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+                          
+                              <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                  <img src="{url_for("static", filename="img/mars1.jpg")}" class="d-block w-500px" alt="1">
+                                </div>
+                                <div class="carousel-item">
+                                  <img src="{url_for("static", filename="img/mars2.jpg")}" class="d-block w-500px" alt="2">
+                                </div>
+                                <div class="carousel-item">
+                                  <img src="{url_for("static", filename="img/mars3.jpg")}" class="d-block w-500px" alt="...">
+                                </div>
+                              </div>
                             </div>
+                          </div>  
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
                           </body>
-                        </html>'''
-    elif request.method == 'POST':
-        return "Форма отправлена"
+                        </html>"""
 
-
-data = ['инженер-исследователь', 'пилот', 'строитель', 'экзобиолог', 'врач',
-       'инженер по терраформированию', 'климатолог',
-       'специалист по радиационной защите', 'астрогеолог', 'гляциолог',
-       'инженер жизнеобеспечения', 'метеоролог', 'оператор марсохода',
-       'киберинженер', 'штурман', 'пилот дронов'] 
- 
 
 if __name__ == '__main__':
     app.run(port=8080, host='127.0.0.1')
