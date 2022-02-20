@@ -1,27 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2 >Список профессий</h2>
-    {% if url=='ol' %}
-
-        <ol >
-            {% for item in professions %}
-                <li>{{ item }}</li>
-            {% endfor %}
-        </ol>
-
-    {% elif url=='ul' %}
-
-        <ul >
-            {% for item in professions %}
-                <li>{{ item }}</li>
-            {% endfor %}
-        </ul>
-
-    {% else %}
-
-        <p>Вы ввели неверный параметр!</p>
-
-    {% endif %}
+    <h2 >Размещение по каютам</h2>
+    {% set room = 'Каюта №' %}
+    {% for name in astronauts %}
+        <p>{{ name }} - {{ room }} {{ loop.index }}
+            {% if loop.first %} - капитан корабля {% endif %}</p>
+    {% endfor %}
 
 {% endblock %}
