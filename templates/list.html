@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2 >Список профессий</h2>
+    {% if url=='ol' %}
+
+        <ol >
+            {% for item in professions %}
+                <li>{{ item }}</li>
+            {% endfor %}
+        </ol>
+
+    {% elif url=='ul' %}
+
+        <ul >
+            {% for item in professions %}
+                <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+
+    {% else %}
+
+        <p>Вы ввели неверный параметр!</p>
+
+    {% endif %}
+
+{% endblock %}
