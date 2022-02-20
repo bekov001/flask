@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ text }}</h1>
+{% if "инженер" in prof or "строитель" in prof %}
+    <img src="/static/img/ha.png">
+{% else %}
+<img src="/static/img/hc.png">
+{% endif %}
+{% endblock %}
