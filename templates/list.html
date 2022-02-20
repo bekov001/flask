@@ -2,10 +2,13 @@
 
 {% block content %}
     <h2 >Размещение по каютам</h2>
+<div class="container">
     {% set room = 'Каюта №' %}
     {% for name in astronauts %}
         <p>{{ name }} - {{ room }} {{ loop.index }}
             {% if loop.first %} - капитан корабля {% endif %}</p>
     {% endfor %}
+</div>
+
 
 {% endblock %}
