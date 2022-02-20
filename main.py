@@ -15,16 +15,20 @@ def train(prof):
     return render_template("index.html", text=choice(("Научные симуляторы", "Инженерные тренажеры")), prof=prof)
 
 
-@app.route('/list_prof/<type_lst>')
-def index(type_lst):
-    return render_template('list.html', url=type_lst, professions=profs)
+@app.route('/answer')
+@app.route('/auto_answer')
+def auto_answer():
+    profil = {}
+    profil['title'] = 'Анкета'
+    profil['surname'] = 'Watny'
+    profil['name'] = 'Mark'
+    profil['education'] = 'выше среднего'
+    profil['profession'] = 'штурман марсохода'
+    profil['sex'] = 'male'
+    profil['motivation'] = 'Всегда мечтал застрять на Марсе!'
+    profil['ready'] = 'True'
+    return render_template('answer.html', **profil)
 
-
-profs = ['инженер-исследователь', 'пилот', 'строитель', 'экзобиолог', 'врач',
-                   'инженер по терраформированию', 'климатолог',
-                   'специалист по радиационной защите', 'астрогеолог', 'гляциолог',
-                   'инженер жизнеобеспечения', 'метеоролог', 'оператор марсохода', 'киберинженер',
-                   'штурман', 'пилот дронов']
 
 
 if __name__ == '__main__':
