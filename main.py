@@ -1,27 +1,32 @@
-from random import choice
-
-from flask import Flask, render_template
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import DataRequired
+from flask import Flask, redirect, render_template
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 
-@app.route("/index/<name>")
-def main(name):
-    return render_template('base.html', name=name)
+class LoginForm(FlaskForm):
+    userid = StringField('id астронавта', validators=[DataRequired()])
+    password_1 = PasswordField('Пароль астронавта', validators=[DataRequired()])
+    cap_id = StringField('id капитана', validators=[DataRequired()])
+    password_2 = PasswordField('Пароль капитана', validators=[DataRequired()])
+    submit = SubmitField('Войти')
 
 
-@app.route("/training/<prof>")
-def train(prof):
-    return render_template("index.html", text=choice(("Научные симуляторы", "Инженерные тренажеры")), prof=prof)
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        return redirect('/success')
+    return render_template('login.html', title='Авторизация', form=form)
 
 
-@app.route('/distribution')
-def distribution():
-    return render_template('list.html', astronauts=astronauts)
+@app.route('/success')
+def success():
+    return 'Это успех!!!'
 
 
 if __name__ == '__main__':
-    astronauts = ['Ридли Скотт', 'Энди Уир', 'Марк Уотни',
-                  'Венката Капур', 'Тедди Сандерс', 'Шон Бин', "Ануар Батырбеков"]
-    app.debug = True
-    app.run(port=8080, host='127.0.0.1')
+    app.run()
