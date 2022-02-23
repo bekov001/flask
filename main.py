@@ -28,5 +28,10 @@ def success():
     return 'Это успех!!!'
 
 
+@app.route('/table/<sex>/<int:age>')
+def table_param(sex, age):
+    return render_template('answer.html', sex=sex, age=age)
+
+
 if __name__ == '__main__':
     app.run()

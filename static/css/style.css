@@ -1,3 +1,15 @@
 h4 {
     margin-left: 20px;
 }
+
+#rectangle_male {
+    width: 220px;
+    height: 120px;
+    background: #4da1f7;
+}
+
+#rectangle_female {
+    width: 220px;
+    height: 120px;
+    background: red;
+}

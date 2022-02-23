@@ -1,11 +1,34 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <p>Фамилия: {{ surname }}</p>
-    <p>Имя: {{ name }}</p>
-    <p>Образование: {{ education }}</p>
-    <p>Профессия: {{ profession }}</p>
-    <p>Пол: {{ sex }}</p>
-    <p>Мотивация: {{ motivation }}</p>
-    <p>Готовы остаться на Марсе? {{ ready }}</p>
+
+    <table class="container">
+        <tr>
+            <td >Цвет стен</td>
+            <td >Эмблема</td>
+        </tr>
+        <tr>
+            {% if sex == 'female' %}
+
+            <td style="width: 300px;"><div id="rectangle_female"></div></td>
+
+            {% endif %}
+            {% if sex=='male' %}
+
+            <td  style="width: 300px;"><div id="rectangle_male"></div></td>
+            {% endif %}
+            {% if age >= 21 %}
+
+            <td><img src="/static/img/old.png" alt="Фото"></td>
+            {% endif %}
+            {% if age < 21 %}
+
+            <td><img src="/static/img/young.png" alt="Фото"></td>
+
+            {% endif %}
+        </tr>
+
+    </table>
+
+
 {% endblock %}
