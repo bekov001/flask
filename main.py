@@ -1,37 +1,35 @@
+import os
+
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from flask_wtf.file import FileRequired
+from werkzeug.utils import secure_filename
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
+    FileField
 from wtforms.validators import DataRequired
-from flask import Flask, redirect, render_template
+from flask import Flask, redirect, render_template, request
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+app.config['SECRET_KEY'] = '123123213'
 
 
 class LoginForm(FlaskForm):
-    userid = StringField('id астронавта', validators=[DataRequired()])
-    password_1 = PasswordField('Пароль астронавта', validators=[DataRequired()])
-    cap_id = StringField('id капитана', validators=[DataRequired()])
-    password_2 = PasswordField('Пароль капитана', validators=[DataRequired()])
+    file = FileField("Img", validators=[FileRequired()])
     submit = SubmitField('Войти')
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/', methods=['GET', 'POST'])
+def index():
     form = LoginForm()
     if form.validate_on_submit():
-        return redirect('/success')
-    return render_template('login.html', title='Авторизация', form=form)
-
-
-@app.route('/success')
-def success():
-    return 'Это успех!!!'
-
-
-@app.route('/table/<sex>/<int:age>')
-def table_param(sex, age):
-    return render_template('answer.html', sex=sex, age=age)
+        f = form.file.data
+        filename = secure_filename(f.filename)
+        f.save(os.path.join(
+            "static", 'mars', filename
+        ))
+    items = os.listdir("static/mars")
+    return render_template("list.html", form=form, items=items)
 
 
 if __name__ == '__main__':
+    app.debug = True
     app.run()
