@@ -2,33 +2,16 @@
 
 {% block content %}
 
-    <table class="container">
-        <tr>
-            <td >Цвет стен</td>
-            <td >Эмблема</td>
-        </tr>
-        <tr>
-            {% if sex == 'female' %}
+    <div class="container">
+        <h2>{{ name }}</h2>
+        <img src="{{ photo }}" style="width: 500px; height: 500px;">
+        <div class="">
+            {% for el in specificity %}
+                <p class="row">{{ el}}</p>
+            {% endfor %}
+        </div>
 
-            <td><div id="rectangle_female"></div></td>
-
-            {% endif %}
-            {% if sex=='male' %}
-
-            <td ><div id="rectangle_male"></div></td>
-            {% endif %}
-            {% if age >= 21 %}
-
-            <td><img src="/static/img/old.png" alt="Фото" style="width: 300px; height: 300px;"></td>
-            {% endif %}
-            {% if age < 21 %}
-
-            <td><img src="/static/img/young.png" alt="Фото" style="width: 300px; height: 300px;"></td>
-
-            {% endif %}
-        </tr>
-
-    </table>
+    </div>
 
 
 {% endblock %}

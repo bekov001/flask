@@ -1,4 +1,6 @@
+import json
 import os
+from random import choice
 
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileRequired
@@ -17,17 +19,11 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Войти')
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/member')
 def index():
-    form = LoginForm()
-    if form.validate_on_submit():
-        f = form.file.data
-        filename = secure_filename(f.filename)
-        f.save(os.path.join(
-            "static", 'mars', filename
-        ))
-    items = os.listdir("static/mars")
-    return render_template("list.html", form=form, items=items)
+    data = json.load(open("static/data/data.json", encoding="utf8"))
+    member = choice(data["members"])
+    return render_template("answer.html", **member)
 
 
 if __name__ == '__main__':
