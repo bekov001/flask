@@ -1,0 +1,24 @@
+{
+  "members": [
+    {
+      "name": "Попит Алекс",
+      "photo": "static/img/old.png",
+      "specificity": ["Технолог", "Инженер"]
+    },
+    {
+      "name": "Энид Лоун",
+      "photo": "static/img/young.png",
+      "specificity": ["Исследователь", "Пилот"]
+    },
+    {
+      "name": "Ануар Легенда",
+      "photo": "static/img/img.png",
+      "specificity": ["Философ", "Филантроп", "Доктор Наук"]
+    },
+    {
+      "name": "Кукиш Бен",
+      "photo": "static/img/mars.png",
+      "specificity": ["Космический строитель", "Программист", "Мастер спорта"]
+    }
+  ]
+}
