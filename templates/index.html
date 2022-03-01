@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ text }}</h1>
-{% if "инженер" in prof or "строитель" in prof %}
-    <img src="/static/img/ha.png">
-{% else %}
-<img src="/static/img/hc.png">
-{% endif %}
+    {% if current_user.is_authenticated %}
+    {% else %}
+        <p>
+            <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
+            <a class="btn btn-success" href="/login">Войти</a>
+        </p>
+    {% endif %}
+    <h3>имена пользователей</h3>
+    {% for user in users %}
+    <p>{{ user.name }}</p>
+    {% endfor %}
 {% endblock %}

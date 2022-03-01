@@ -1,31 +1,96 @@
-import json
-import os
-from random import choice
-
+from flask import Flask, redirect, render_template
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileRequired
-from werkzeug.utils import secure_filename
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
-    FileField
+from werkzeug.security import generate_password_hash
+from wtforms import EmailField, PasswordField, SubmitField, StringField, \
+    BooleanField
 from wtforms.validators import DataRequired
-from flask import Flask, redirect, render_template, request
+from flask_login import LoginManager, login_user, login_required, logout_user
+from data import db_session
+from data.users import MarsUser
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '123123213'
+app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.query(MarsUser).get(user_id)
 
 
 class LoginForm(FlaskForm):
-    file = FileField("Img", validators=[FileRequired()])
+    email = EmailField('Почта', validators=[DataRequired()])
+    password = PasswordField('Пароль', validators=[DataRequired()])
+    remember_me = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')
 
 
-@app.route('/member')
+class RegisterForm(FlaskForm):
+    name = StringField("name", validators=[DataRequired()])
+    surname = StringField("surname", validators=[DataRequired()])
+    card = StringField("card", validators=[DataRequired()])
+    about = StringField("about", validators=[DataRequired()])
+    email = EmailField('Почта', validators=[DataRequired()])
+    password = PasswordField('Пароль', validators=[DataRequired()])
+    remember_me = BooleanField('Запомнить меня')
+    submit = SubmitField('Войти')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(MarsUser).filter(MarsUser.email == form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/")
+        return render_template('login.html',
+                               message="Неправильный логин или пароль",
+                               form=form)
+    return render_template('login.html', title='Авторизация', form=form)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = MarsUser()
+        user.email = form.email.data
+        user.name = form.name.data
+        user.surname = form.surname.data
+        user.card = form.card.data
+        user.about = form.about.data
+        user.set_password(form.password.data)
+        db_sess.add(user)
+        db_sess.commit()
+        login_user(user, remember=form.remember_me.data)
+        return redirect("/")
+    return render_template('register.html', title='Авторизация', form=form)
+
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    data = json.load(open("static/data/data.json", encoding="utf8"))
-    member = choice(data["members"])
-    return render_template("answer.html", **member)
+    db_sess = db_session.create_session()
+    users = db_sess.query(MarsUser).all()
+    return render_template('index.html', users=users)
+
+
+def main():
+    db_session.global_init("db/mars.db")
+    app.debug = True
+    app.run()
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
 
 
 if __name__ == '__main__':
-    app.debug = True
-    app.run()
+    main()
