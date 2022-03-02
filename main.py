@@ -72,11 +72,13 @@ def register():
     return render_template('register.html', title='Авторизация', form=form)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route("/")
 def index():
     db_sess = db_session.create_session()
+    jobs = db_sess.query(Jobs).all()
     users = db_sess.query(MarsUser).all()
-    return render_template('index.html', users=users)
+    names = {name.id: (name.surname, name.name) for name in users}
+    return render_template("index.html", jobs=jobs, names=names, title='Work log')
 
 
 def main():
