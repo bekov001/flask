@@ -2,11 +2,11 @@ from flask import Flask, redirect, render_template
 from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash
 from wtforms import EmailField, PasswordField, SubmitField, StringField, \
-    BooleanField
+    BooleanField, IntegerField
 from wtforms.validators import DataRequired
 from flask_login import LoginManager, login_user, login_required, logout_user
 from data import db_session
-from data.users import MarsUser
+from data.users import MarsUser, Jobs
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -36,6 +36,16 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Пароль', validators=[DataRequired()])
     remember_me = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')
+
+
+class AddJobForm(FlaskForm):
+    job = StringField('Job Title', validators=[DataRequired()])
+    team_leader = IntegerField('Team Leader id', validators=[DataRequired()])
+    work_size = StringField('Work Size', validators=[DataRequired()])
+    collaborators = StringField('Collaborators', validators=[DataRequired()])
+    is_finished = BooleanField('Is job finished?')
+
+    submit = SubmitField('Submit')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -79,6 +89,24 @@ def index():
     users = db_sess.query(MarsUser).all()
     names = {name.id: (name.surname, name.name) for name in users}
     return render_template("index.html", jobs=jobs, names=names, title='Work log')
+
+
+@app.route('/add_job', methods=['GET', 'POST'])
+def add_job():
+    add_form = AddJobForm()
+    if add_form.validate_on_submit():
+        db_sess = db_session.create_session()
+        jobs = Jobs(
+            job=add_form.job.data,
+            team_leader=add_form.team_leader.data,
+            work_size=add_form.work_size.data,
+            collaborators=add_form.collaborators.data,
+            is_finished=add_form.is_finished.data
+        )
+        db_sess.add(jobs)
+        db_sess.commit()
+        return redirect('/')
+    return render_template('add_job.html', title='Adding a job', form=add_form)
 
 
 def main():
