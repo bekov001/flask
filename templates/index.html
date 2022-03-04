@@ -2,33 +2,32 @@
 
 {% block content %}
 <meta charset="UTF-8">
-<h2 align="center">Works log</h2>
-{% for job in jobs %}
-<h3>Action # {{ job.id }}</h3>
+<h2 align="center">Jobs</h2>
 <div class="container">
     <table class="table">
-        <tr class="row">
-            <td class="title" width="400px" bgcolor="#dddddd">Title of activity</td>
-            <td class="title" width="150px" bgcolor="#dddddd">Team leader</td>
-            <td class="title" width="100px" bgcolor="#dddddd" align="center">Duration</td>
-            <td class="title" width="200px" bgcolor="#dddddd" align="center">List of collaborators</td>
-            <td class="title" width="100px" bgcolor="#dddddd" align="center">Is finished</td>
+        <tr >
+            <th>Title of activity</th>
+            <th >Team leader</th>
+            <th>Duration</th>
+            <th >List of collaborators</th>
+            <th>Is finished</th>
         </tr>
-        <tr class="row">
-            <td class="ordinary" bgcolor="#eeeeff">{{ job.job.capitalize() }}</td>
-            <td class="ordinary" bgcolor="#eeeeff">{{ names[job.team_leader][0] }} {{ names[job.team_leader][1] }}</td>
-            <td class="ordinary" bgcolor="#eeeeff" align="center">{{ job.work_size }} hours</td>
-            <td class="ordinary" bgcolor="#eeeeff" align="center">{{ job.collaborators }}</td>
+        {% for job in jobs %}
+        <tr>
+            <td class="ordinary">{{ job.job.capitalize() }}</td>
+            <td class="ordinary" >{{ names[job.team_leader][0] }} {{ names[job.team_leader][1] }}</td>
+            <td class="ordinary">{{ job.work_size }} hours</td>
+            <td class="ordinary">{{ job.collaborators }}</td>
             {% if job.is_finished %}
-            <td class="ordinary" bgcolor="#eeffee" align="center">Finished</td>
+            <td class="ordinary" >Finished</td>
             {% else %}
-            <td class="ordinary" bgcolor="#ffeeff" align="center">Is not finished</td>
+            <td class="ordinary" >Is not finished</td>
             {% endif %}
         </tr>
-
+        {% endfor %}
     </table>
 </div>
 <br>
-{% endfor %}
+
 
 {% endblock %}
