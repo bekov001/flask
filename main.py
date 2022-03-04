@@ -144,6 +144,19 @@ def edit_news(id):
                            )
 
 
+@app.route('/job_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def news_delete(id):
+    db_sess = db_session.create_session()
+    jobs = db_sess.query(Jobs).filter(Jobs.id == id).first()
+    if jobs and (current_user.id == 1 or current_user.id == jobs.team_leader):
+        db_sess.delete(jobs)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/')
+
+
 def main():
     db_session.global_init("db/mars.db")
     app.debug = True
