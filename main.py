@@ -1,3 +1,5 @@
+from random import choice
+
 from flask import Flask, redirect, render_template, request, abort
 from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash
@@ -7,6 +9,7 @@ from wtforms.validators import DataRequired
 from flask_login import LoginManager, login_user, login_required, logout_user, \
     current_user
 from data import db_session
+from data.category import Category
 from data.news import Department
 from data.users import MarsUser, Jobs
 
@@ -187,6 +190,7 @@ def add_job():
             collaborators=add_form.collaborators.data,
             is_finished=add_form.is_finished.data
         )
+        jobs.categories.append(choice([category, category1]))
         db_sess.add(jobs)
         db_sess.commit()
         return redirect('/')
@@ -241,7 +245,6 @@ def news_delete(id):
 
 
 def main():
-    db_session.global_init("db/mars.db")
     app.debug = True
     app.run()
 
@@ -254,13 +257,9 @@ def logout():
 
 
 if __name__ == '__main__':
-
-    a = """
-    form.job.data = jobs.job
-    form.team_leader.data = jobs.team_leader
-    form.work_size.data = jobs.work_size
-    form.collaborators.data = jobs.collaborators
-    form.is_finished.data = jobs.is_finished
-            """
-    print(*["=".join(i.split("=")[::-1]) for i in a.split("\n")], sep="\n")
+    db_session.global_init("db/mars.db")
+    category = Category()
+    category.name = "high"
+    category1 = Category()
+    category.name = "low"
     main()
