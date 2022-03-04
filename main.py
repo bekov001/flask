@@ -88,7 +88,7 @@ def index():
     jobs = db_sess.query(Jobs).all()
     users = db_sess.query(MarsUser).all()
     names = {name.id: (name.surname, name.name) for name in users}
-    return render_template("index.html", jobs=jobs, names=names, title='Work log')
+    return render_template("index.html", jobs=jobs, names=names)
 
 
 @app.route('/add_job', methods=['GET', 'POST'])

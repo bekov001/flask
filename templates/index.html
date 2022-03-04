@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <h2 align="center">Jobs</h2>
 <div class="container">
+    {% for job in jobs %}
+    <h3>Action #{{ job.id }}</h3>
     <table class="table">
         <tr >
             <th>Title of activity</th>
@@ -12,7 +14,7 @@
             <th >List of collaborators</th>
             <th>Is finished</th>
         </tr>
-        {% for job in jobs %}
+
         <tr>
             <td class="ordinary">{{ job.job.capitalize() }}</td>
             <td class="ordinary" >{{ names[job.team_leader][0] }} {{ names[job.team_leader][1] }}</td>
@@ -24,8 +26,9 @@
             <td class="ordinary" >Is not finished</td>
             {% endif %}
         </tr>
-        {% endfor %}
+
     </table>
+    {% endfor %}
 </div>
 <br>
 
