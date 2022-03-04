@@ -117,7 +117,7 @@ def edit_news(id):
     if request.method == "GET":
         db_sess = db_session.create_session()
         jobs = db_sess.query(Jobs).filter(Jobs.id == id).first()
-        if jobs and (current_user.id == 1 or current_user.id == jobs.team_leader.id):
+        if jobs and (current_user.id == 1 or current_user.id == jobs.team_leader):
             form.job.data = jobs.job
             form.team_leader.data = jobs.team_leader
             form.work_size.data = jobs.work_size
