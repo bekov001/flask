@@ -1,10 +1,11 @@
-from flask import Flask, redirect, render_template
+from flask import Flask, redirect, render_template, request, abort
 from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash
 from wtforms import EmailField, PasswordField, SubmitField, StringField, \
     BooleanField, IntegerField
 from wtforms.validators import DataRequired
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, \
+    current_user
 from data import db_session
 from data.users import MarsUser, Jobs
 
@@ -109,6 +110,40 @@ def add_job():
     return render_template('add_job.html', title='Adding a job', form=add_form)
 
 
+@app.route('/job/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_news(id):
+    form = AddJobForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        jobs = db_sess.query(Jobs).filter(Jobs.id == id).first()
+        if jobs and (current_user.id == 1 or current_user.id == jobs.team_leader.id):
+            form.job.data = jobs.job
+            form.team_leader.data = jobs.team_leader
+            form.work_size.data = jobs.work_size
+            form.collaborators.data = jobs.collaborators
+            form.is_finished.data = jobs.is_finished
+        else:
+            return "Страница не найдена либо у вас нет прав"
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        jobs = db_sess.query(Jobs).filter(Jobs.id == id).first()
+        if jobs:
+            jobs.job = form.job.data
+            jobs.team_leader = form.team_leader.data
+            jobs.work_size = form.work_size.data
+            jobs.collaborators = form.collaborators.data
+            jobs.is_finished = form.is_finished.data
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('add_job.html',
+                           title='Редактирование новости',
+                           form=form
+                           )
+
+
 def main():
     db_session.global_init("db/mars.db")
     app.debug = True
@@ -123,4 +158,13 @@ def logout():
 
 
 if __name__ == '__main__':
+
+    a = """
+    form.job.data = jobs.job
+    form.team_leader.data = jobs.team_leader
+    form.work_size.data = jobs.work_size
+    form.collaborators.data = jobs.collaborators
+    form.is_finished.data = jobs.is_finished
+            """
+    print(*["=".join(i.split("=")[::-1]) for i in a.split("\n")], sep="\n")
     main()
