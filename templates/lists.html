@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<h2>List of Departments</h2>
+{% if current_user.is_authenticated %}
+<p>
+    <a href="/" class="btn btn-secondary">Back to Jobs</a>
+    <a href="/add_depart" class="btn btn-secondary">Add a Department</a></p>
+{% endif %}
+{% for depart in departments %}
+<h3>Department # {{ depart.id }}</h3>
+<div class="table_container">
+        <table class="table">
+        <tr >
+            <th>Title of department</th>
+            <th >Chied</th>
+            <th>Members</th>
+            <th >Department Email</th>
+        </tr>
+
+        <tr>
+            <td class="ordinary">{{ depart.title.capitalize() }}</td>
+            <td class="ordinary" >{{ names[depart.chief][0] }} {{ names[depart.chief][1] }}</td>
+            <td class="ordinary">{{ depart.members }}</td>
+            <td class="ordinary" >{{ depart.email }}</td>
+        </tr>
+
+    </table>
+</div>
+<br>
+{% if current_user.is_authenticated and current_user.id == depart.chief or current_user.id == 1  %}
+<div>
+    <a href="/departments/{{ depart.id }}" class="btn btn-warning">Изменить</a>
+    <a href="/depart_delete/{{ depart.id }}" class="btn btn-danger">Удалить</a>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+{% endblock %}

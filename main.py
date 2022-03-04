@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired
 from flask_login import LoginManager, login_user, login_required, logout_user, \
     current_user
 from data import db_session
+from data.news import Department
 from data.users import MarsUser, Jobs
 
 app = Flask(__name__)
@@ -26,6 +27,14 @@ class LoginForm(FlaskForm):
     password = PasswordField('Пароль', validators=[DataRequired()])
     remember_me = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')
+
+
+class AddDepartForm(FlaskForm):
+    title = StringField('Department Title', validators=[DataRequired()])
+    chief = IntegerField('Chief ID', validators=[DataRequired()])
+    members = StringField('Members', validators=[DataRequired()])
+    email = EmailField('Department Email', validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
 
 class RegisterForm(FlaskForm):
@@ -90,6 +99,80 @@ def index():
     users = db_sess.query(MarsUser).all()
     names = {name.id: (name.surname, name.name) for name in users}
     return render_template("index.html", jobs=jobs, names=names)
+
+
+@app.route('/add_depart', methods=['GET', 'POST'])
+def add_depart():
+    add_form = AddDepartForm()
+    if add_form.validate_on_submit():
+        session = db_session.create_session()
+        depart = Department(
+            title=add_form.title.data,
+            chief=add_form.chief.data,
+            members=add_form.members.data,
+            email=add_form.email.data
+        )
+        session.add(depart)
+        session.commit()
+        return redirect('/')
+    return render_template('add_depart.html', title='Adding a Department', form=add_form)
+
+
+@app.route("/departments")
+def depart():
+    session = db_session.create_session()
+    departments = session.query(Department).all()
+    users = session.query(MarsUser).all()
+    names = {name.id: (name.surname, name.name) for name in users}
+    return render_template("lists.html", departments=departments, names=names, title='List of Departments')
+
+
+@app.route('/departments/<int:id>', methods=['GET', 'POST'])
+@login_required
+def depart_edit(id):
+    form = AddDepartForm()
+    if request.method == "GET":
+        session = db_session.create_session()
+        depart = session.query(Department).filter(Department.id == id,
+                                                  (Department.chief == current_user.id) | (
+                                                          current_user.id == 1)).first()
+        if depart:
+            form.title.data = depart.title
+            form.chief.data = depart.chief
+            form.members.data = depart.members
+            form.email.data = depart.email
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        depart = session.query(Department).filter(Department.id == id,
+                                                  (Department.chief == current_user.id) | (
+                                                          current_user.id == 1)).first()
+        if depart:
+            depart.title = form.title.data
+            depart.chief = form.chief.data
+            depart.members = form.members.data
+            depart.email = form.email.data
+            session.commit()
+            return redirect('/departments')
+        else:
+            abort(404)
+    return render_template('add_depart.html', title='Department Edit', form=form)
+
+
+@app.route('/depart_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def depart_delete(id):
+    session = db_session.create_session()
+    depart = session.query(Department).filter(Department.id == id,
+                                              (Department.chief == current_user.id) | (
+                                                      current_user.id == 1)).first()
+    if depart:
+        session.delete(depart)
+        session.commit()
+    else:
+        abort(404)
+    return redirect('/departments')
 
 
 @app.route('/add_job', methods=['GET', 'POST'])

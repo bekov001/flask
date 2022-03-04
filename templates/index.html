@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<meta charset="UTF-8">
-<h2 align="center">Jobs</h2>
 <div class="container">
+    <h2 align="center">Jobs</h2>
+    <p>
+        <a href="/departments" class="btn btn-secondary">Департамент</a>
+    </p>
     {% for job in jobs %}
     <h3>Action #{{ job.id }}</h3>
     <table class="table">

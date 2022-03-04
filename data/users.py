@@ -22,6 +22,7 @@ class MarsUser(SqlAlchemyBase, UserMixin):
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
 
+    departments = orm.relation("Department", back_populates='user')
     jobs = orm.relation("Jobs", back_populates='user')
 
     def check_password(self, password):
