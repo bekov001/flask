@@ -1,6 +1,6 @@
 from random import choice
 
-from flask import Flask, redirect, render_template, request, abort
+from flask import Flask, redirect, render_template, request, abort, jsonify
 from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash
 from wtforms import EmailField, PasswordField, SubmitField, StringField, \
@@ -14,11 +14,17 @@ from data import db_session
 from data.category import Category
 from data.news import Department
 from data.users import User, Jobs
+from flask import make_response
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 @login_manager.user_loader

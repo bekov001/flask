@@ -22,3 +22,18 @@ def get_news():
                  for item in news]
         }
     )
+
+
+@blueprint.route('/api/job/<int:id>')
+def get_news_one(id):
+    db_sess = db_session.create_session()
+    news = db_sess.query(Jobs).get(id)
+    if news:
+        return jsonify(
+            {
+                'job':
+                    news.to_dict(only=('job', 'work_size', "collaborators", "team_leader.id", "is_finished"))
+
+            }
+        )
+    return "404"
