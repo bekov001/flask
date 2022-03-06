@@ -8,10 +8,12 @@ from wtforms import EmailField, PasswordField, SubmitField, StringField, \
 from wtforms.validators import DataRequired
 from flask_login import LoginManager, login_user, login_required, logout_user, \
     current_user
+
+import jos_api
 from data import db_session
 from data.category import Category
 from data.news import Department
-from data.users import MarsUser, Jobs
+from data.users import User, Jobs
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -22,7 +24,7 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
-    return db_sess.query(MarsUser).get(user_id)
+    return db_sess.query(User).get(user_id)
 
 
 class LoginForm(FlaskForm):
@@ -66,7 +68,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        user = db_sess.query(MarsUser).filter(MarsUser.email == form.email.data).first()
+        user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             return redirect("/")
@@ -81,7 +83,7 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        user = MarsUser()
+        user = User()
         user.email = form.email.data
         user.name = form.name.data
         user.surname = form.surname.data
@@ -99,7 +101,7 @@ def register():
 def index():
     db_sess = db_session.create_session()
     jobs = db_sess.query(Jobs).all()
-    users = db_sess.query(MarsUser).all()
+    users = db_sess.query(User).all()
     names = {name.id: (name.surname, name.name) for name in users}
     return render_template("index.html", jobs=jobs, names=names)
 
@@ -110,8 +112,8 @@ def add_depart():
     message=""
     if add_form.validate_on_submit():
         session = db_session.create_session()
-        user = session.query(MarsUser).filter(
-            MarsUser.id == add_form.chief.data).first()
+        user = session.query(User).filter(
+            User.id == add_form.chief.data).first()
         if user:
             depart = Department(
                 title=add_form.title.data,
@@ -130,7 +132,7 @@ def add_depart():
 def depart():
     session = db_session.create_session()
     departments = session.query(Department).all()
-    users = session.query(MarsUser).all()
+    users = session.query(User).all()
     names = {name.id: (name.surname, name.name) for name in users}
     return render_template("lists.html", departments=departments, names=names, title='List of Departments')
 
@@ -189,8 +191,8 @@ def add_job():
     message=""
     if add_form.validate_on_submit():
         db_sess = db_session.create_session()
-        user = db_sess.query(MarsUser).filter(
-            MarsUser.id == add_form.team_leader.data).first()
+        user = db_sess.query(User).filter(
+            User.id == add_form.team_leader.data).first()
         if user:
             jobs = Jobs(
                 job=add_form.job.data,
@@ -255,6 +257,8 @@ def news_delete(id):
 
 
 def main():
+    db_session.global_init("db/blogs.db")
+    app.register_blueprint(jos_api.blueprint)
     app.debug = True
     app.run()
 
