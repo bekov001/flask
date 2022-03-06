@@ -107,18 +107,23 @@ def index():
 @app.route('/add_depart', methods=['GET', 'POST'])
 def add_depart():
     add_form = AddDepartForm()
+    message=""
     if add_form.validate_on_submit():
         session = db_session.create_session()
-        depart = Department(
-            title=add_form.title.data,
-            chief=add_form.chief.data,
-            members=add_form.members.data,
-            email=add_form.email.data
-        )
-        session.add(depart)
-        session.commit()
-        return redirect('/')
-    return render_template('add_depart.html', title='Adding a Department', form=add_form)
+        user = session.query(MarsUser).filter(
+            MarsUser.id == add_form.chief.data).first()
+        if user:
+            depart = Department(
+                title=add_form.title.data,
+                chief=add_form.chief.data,
+                members=add_form.members.data,
+                email=add_form.email.data
+            )
+            session.add(depart)
+            session.commit()
+            return redirect('/')
+        message = "Неверный шеф"
+    return render_template('add_depart.html', title='Adding a Department', form=add_form, message=message)
 
 
 @app.route("/departments")
@@ -181,20 +186,25 @@ def depart_delete(id):
 @app.route('/add_job', methods=['GET', 'POST'])
 def add_job():
     add_form = AddJobForm()
+    message=""
     if add_form.validate_on_submit():
         db_sess = db_session.create_session()
-        jobs = Jobs(
-            job=add_form.job.data,
-            team_leader=add_form.team_leader.data,
-            work_size=add_form.work_size.data,
-            collaborators=add_form.collaborators.data,
-            is_finished=add_form.is_finished.data
-        )
-        jobs.categories.append(choice([category, category1]))
-        db_sess.add(jobs)
-        db_sess.commit()
-        return redirect('/')
-    return render_template('add_job.html', title='Adding a job', form=add_form)
+        user = db_sess.query(MarsUser).filter(
+            MarsUser.id == add_form.team_leader.data).first()
+        if user:
+            jobs = Jobs(
+                job=add_form.job.data,
+                team_leader=add_form.team_leader.data,
+                work_size=add_form.work_size.data,
+                collaborators=add_form.collaborators.data,
+                is_finished=add_form.is_finished.data
+            )
+            jobs.categories.append(choice([category, category1]))
+            db_sess.add(jobs)
+            db_sess.commit()
+            return redirect('/')
+        message = "Неверный тимлид"
+    return render_template('add_job.html', title='Adding a job', form=add_form, message=message)
 
 
 @app.route('/job/<int:id>', methods=['GET', 'POST'])

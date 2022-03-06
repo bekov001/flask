@@ -7,6 +7,7 @@
 <form action="" method="post">
     {{ form.hidden_tag() }}
     {{ form.csrf_token }}
+    <p>{{ mess}}</p>
     <p>
         {{ form.job.label }}<br>
         {{ form.job(class="form-control") }}<br>
