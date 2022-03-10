@@ -1,6 +1,7 @@
 from random import choice
 
 from flask import Flask, redirect, render_template, request, abort, jsonify
+from flask_restful import Api
 from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash
 from wtforms import EmailField, PasswordField, SubmitField, StringField, \
@@ -10,6 +11,8 @@ from flask_login import LoginManager, login_user, login_required, logout_user, \
     current_user
 
 import jos_api
+import users_api
+import users_resources
 from data import db_session
 from data.category import Category
 from data.news import Department
@@ -20,7 +23,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
-
+api = Api(app)
 
 @app.errorhandler(404)
 def not_found(error):
@@ -264,9 +267,16 @@ def news_delete(id):
 
 def main():
     db_session.global_init("db/blogs.db")
-    app.register_blueprint(jos_api.blueprint)
-    app.debug = True
+    app.register_blueprint(users_api.blueprint)
+    app.debug = False
     app.run()
+
+
+from flask import make_response
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 @app.route('/logout')
@@ -277,6 +287,21 @@ def logout():
 
 
 if __name__ == '__main__':
+    # a =  """
+    # id = sqlalchemy.Column(sqlalchemy.Integer,primary_key=True, autoincrement=True)
+    # name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    # surname = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    # card = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    # about = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    # email = sqlalchemy.Column(sqlalchemy.String,index=True, unique=True, nullable=True)
+    # hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    # created_date = sqlalchemy.Column(sqlalchemy.DateTime,default=datetime.datetime.now)
+    # """
+    # print(a.replace("\n", " = ").split(" = ")[1::2])
+    # a = ['    id', '    name', '    surname', '    card', '    about', '    email', '    hashed_password']
+    # for i in a:
+    #     print(f"job_to_edit.id = jobs.id".replace("id", i.replace(" ", "")))
+    # print([i.replace(" ", "") for i in a])
     db_session.global_init("db/mars.db")
     category = Category()
     category.name = "high"
