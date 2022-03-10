@@ -10,7 +10,7 @@ blueprint = flask.Blueprint(
     template_folder='templates'
 )
 
-src = ['id', 'name', 'surname', 'card', 'about', 'email', "password"]
+src = ['id', 'name', 'surname', 'card', 'about', 'email', "city_form", "password"]
 
 @blueprint.route('/api/users')
 def get_users():
@@ -55,7 +55,8 @@ def create_user():
             surname=request.json['surname'],
             card=request.json['card'],
             about=request.json['about'],
-            email=request.json['email']
+            email=request.json['email'],
+            city_form=request.json['city_form']
         )
         news.set_password(request.json['password'])
         db_sess.add(news)

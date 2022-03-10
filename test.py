@@ -1,7 +1,8 @@
 from requests import put, get, post, delete
 
 
-a = get('http://127.0.0.1:5000/api/users')
+a = post('http://127.0.0.1:5000/api/users', json={'about': 'I`m the cool', 'card': '404', 'email': '123123@anuar.kz', 'id': 1, 'name': 'Arnur', 'surname': 'ELegndaa', "password": "123123213", "city_form" : "Moscow"})
+
 print(a.json())
 
 # a = get('http://127.0.0.1:5000/api/user/1')

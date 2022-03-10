@@ -1,8 +1,10 @@
 from random import choice
 
+import requests
 from flask import Flask, redirect, render_template, request, abort, jsonify
 from flask_restful import Api
 from flask_wtf import FlaskForm
+from requests import get
 from werkzeug.security import generate_password_hash
 from wtforms import EmailField, PasswordField, SubmitField, StringField, \
     BooleanField, IntegerField
@@ -24,7 +26,6 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
 api = Api(app)
-
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
@@ -265,6 +266,32 @@ def news_delete(id):
     return redirect('/')
 
 
+@app.route('/users_show/<int:user_id>')
+def show_city(user_id):
+    api_key = "40d1649f-0493-4b70-98ba-98533de7710b"
+    user = get(f'http://localhost:5000/api/user/{user_id}').json()
+    print(user)
+    response = requests.get(
+        f"http://geocode-maps.yandex.ru/1.x/?apikey={api_key}&geocode={user['user']['city_form']}&format=json")
+
+    if response:
+        json_response = response.json()
+        toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+        toponym_coodrinates = ','.join(toponym["Point"]["pos"].split())
+        # print(toponym_coodrinates)
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll={toponym_coodrinates}&spn=0.03,0.03&l=sat"
+        city_map = requests.get(map_request)
+        # print(city_map)
+        map_file = "static/img/map.png"
+        with open(map_file, "wb") as file:
+            file.write(city_map.content)
+    else:
+        print("Ошибка выполнения запроса:")
+        print("Http статус:", response.status_code, "(", response.reason, ")")
+        exit(1)
+    return render_template('city.html', user=user)
+
+
 def main():
     db_session.global_init("db/blogs.db")
     app.register_blueprint(users_api.blueprint)
@@ -302,7 +329,7 @@ if __name__ == '__main__':
     # for i in a:
     #     print(f"job_to_edit.id = jobs.id".replace("id", i.replace(" ", "")))
     # print([i.replace(" ", "") for i in a])
-    db_session.global_init("db/mars.db")
+    db_session.global_init("db/work.db")
     category = Category()
     category.name = "high"
     category1 = Category()
