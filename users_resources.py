@@ -10,7 +10,7 @@ src = ['id', 'name', 'surname', 'card', 'about', 'email', "city_form", "password
 
 def abort_if_news_not_found(news_id):
     session = db_session.create_session()
-    news = session.query(Jobs).get(news_id)
+    news = session.query(User).get(news_id)
     if not news:
         abort(404, message=f"User {news_id} not found")
 
