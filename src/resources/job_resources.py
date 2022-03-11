@@ -12,7 +12,7 @@ def abort_if_news_not_found(news_id):
         abort(404, message=f"News {news_id} not found")
 
 
-class NewsResource(Resource):
+class JobsResource(Resource):
     def get(self, news_id):
         abort_if_news_not_found(news_id)
         session = db_session.create_session()
