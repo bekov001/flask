@@ -19,14 +19,14 @@ class UserResource(Resource):
     def get(self, news_id):
         abort_if_news_not_found(news_id)
         session = db_session.create_session()
-        news = session.query(Jobs).get(news_id)
+        news = session.query(User).get(news_id)
         return jsonify({'user': news.to_dict(
             only=src[:-1])})
 
     def delete(self, news_id):
         abort_if_news_not_found(news_id)
         session = db_session.create_session()
-        news = session.query(Jobs).get(news_id)
+        news = session.query(User).get(news_id)
         session.delete(news)
         session.commit()
         return jsonify({'success': 'OK'})
