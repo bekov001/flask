@@ -295,6 +295,13 @@ def show_city(user_id):
 def main():
     db_session.global_init("db/blogs.db")
     app.register_blueprint(users_api.blueprint)
+    # для списка объектов
+    api.add_resource(users_resources.UserListResource, '/api/v2/users')
+
+    # для одного объекта
+    api.add_resource(users_resources.UserResource, '/api/v2/users/<int:news_id>')ъ
+    app.register_blueprint(jos_api.blueprint)
+    app.register_blueprint(users_api.blueprint)
     app.debug = False
     app.run()
 
@@ -314,21 +321,7 @@ def logout():
 
 
 if __name__ == '__main__':
-    # a =  """
-    # id = sqlalchemy.Column(sqlalchemy.Integer,primary_key=True, autoincrement=True)
-    # name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    # surname = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    # card = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    # about = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    # email = sqlalchemy.Column(sqlalchemy.String,index=True, unique=True, nullable=True)
-    # hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    # created_date = sqlalchemy.Column(sqlalchemy.DateTime,default=datetime.datetime.now)
-    # """
-    # print(a.replace("\n", " = ").split(" = ")[1::2])
     # a = ['    id', '    name', '    surname', '    card', '    about', '    email', '    hashed_password']
-    # for i in a:
-    #     print(f"job_to_edit.id = jobs.id".replace("id", i.replace(" ", "")))
-    # print([i.replace(" ", "") for i in a])
     db_session.global_init("db/work.db")
     category = Category()
     category.name = "high"
