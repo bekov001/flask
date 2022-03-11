@@ -299,7 +299,7 @@ def main():
     api.add_resource(users_resources.UserListResource, '/api/v2/users')
 
     # для одного объекта
-    api.add_resource(users_resources.UserResource, '/api/v2/users/<int:news_id>')ъ
+    api.add_resource(users_resources.UserResource, '/api/v2/users/<int:news_id>')
     app.register_blueprint(jos_api.blueprint)
     app.register_blueprint(users_api.blueprint)
     app.debug = False
