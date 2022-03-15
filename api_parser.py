@@ -5,7 +5,7 @@ parser.add_argument('id', required=True)
 parser.add_argument('name', required=True)
 parser.add_argument('surname', required=True)
 parser.add_argument('card', required=True)
-parser.add_argument('about', required=True)1
+parser.add_argument('about', required=True)
 parser.add_argument('email', required=True)
 parser.add_argument('hashed_password', required=True)
 
