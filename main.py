@@ -21,6 +21,8 @@ from data.news import Department
 from data.users import User, Jobs
 from flask import make_response
 
+from src.resources import job_resources
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
@@ -300,16 +302,15 @@ def main():
 
     # для одного объекта
     api.add_resource(users_resources.UserResource, '/api/v2/users/<int:news_id>')
+
+    api.add_resource(job_resources.JobsResource, '/api/v2/jobs/<int:news_id>')
+
+    # для одного объекта
+    api.add_resource(job_resources.JobsListResource,
+                     '/api/v2/jobs')
     app.register_blueprint(jos_api.blueprint)
     app.debug = False
     app.run()
-
-
-from flask import make_response
-
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 @app.route('/logout')
