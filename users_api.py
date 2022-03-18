@@ -85,26 +85,15 @@ def edit_job(job_id):
     elif not all(key in request.json for key in
                 src):
         return jsonify({'error': 'Bad request'})
-
-    jobs = User(
-        id=request.json['id'],
-        name=request.json['name'],
-        surname=request.json['surname'],
-        card=request.json['card'],
-        about=request.json['about'],
-        email=request.json['email'],
-    )
-    jobs.set_password(request.json['password'])
-    job_to_edit = db_sess.query(User).filter(User.id == job_id).first()
-    if not job_to_edit:
+    edit_user = db_sess.query(User).filter(User.id == job_id).first()
+    if not edit_user:
         return jsonify({'error': 'Not found'})
-    if job_to_edit:
-        job_to_edit.id = jobs.id
-        job_to_edit.name = jobs.name
-        job_to_edit.surname = jobs.surname
-        job_to_edit.card = jobs.card
-        job_to_edit.about = jobs.about
-        job_to_edit.email = jobs.email
-        job_to_edit.hashed_password = jobs.hashed_password
+    if isinstance(request.json.get('id', False), int) and db_sess.query(User).filter(User.id == request.json["id"]).first():
+        return jsonify({'error': 'this id is exists'})
+    if edit_user:
+        for el in src:
+            if request.json.get(el, False) or isinstance(request.json.get(el, False), int):
+                setattr(edit_user, el, request.json[el])
+
     db_sess.commit()
     return jsonify({'success': 'OK'})

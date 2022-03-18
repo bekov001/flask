@@ -10,7 +10,7 @@ blueprint = flask.Blueprint(
     template_folder='templates'
 )
 
-
+src = ("id", 'job', 'work_size', "collaborators", "team_leader", "is_finished")
 @blueprint.route('/api/jobs')
 def get_news():
     db_sess = db_session.create_session()
@@ -80,27 +80,18 @@ def edit_job(job_id):
     # jobs = session.query(Jobs).get(job_id)
     if not request.json:
         return jsonify({'error': 'Empty request'})
-    elif not all(key in request.json for key in
-                 ['job', 'work_size', "collaborators", "team_leader.id", "is_finished"]):
+    elif not all(key in src for key in
+                request.json.keys()):
         return jsonify({'error': 'Bad request'})
-
-    jobs = Jobs(
-        id=request.json['id'],
-        job=request.json['job'],
-        team_leader=request.json['team_leader.id'],
-        work_size=request.json['work_size'],
-        collaborators=request.json['collaborators'],
-        is_finished=request.json['is_finished']
-    )
-    job_to_edit = db_sess.query(Jobs).filter(Jobs.id == job_id).first()
-    if not job_to_edit:
+    job = db_sess.query(Jobs).filter(Jobs.id == job_id).first()
+    if not job:
         return jsonify({'error': 'Not found'})
-    if job_to_edit:
-        job_to_edit.id = jobs.id
-        job_to_edit.job = jobs.job
-        job_to_edit.team_leader = jobs.team_leader
-        job_to_edit.work_size = jobs.work_size
-        job_to_edit.collaborators = jobs.collaborators
-        job_to_edit.is_finished = jobs.is_finished
+    if isinstance(request.json.get('id', str), int) and db_sess.query(Jobs).filter(Jobs.id == request.json["id"]).first():
+        return jsonify({'error': 'this id is exists'})
+    if job:
+        for el in src:
+            if request.json.get(el, False) or isinstance(request.json.get(el, str), int):
+                setattr(job, el, request.json[el])
+
     db_sess.commit()
     return jsonify({'success': 'OK'})
